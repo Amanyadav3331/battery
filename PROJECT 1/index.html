@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Solar PowerBank Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body {
+  margin: 0;
+  padding: 0;<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Solar PowerBank Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body {
+  margin: 0;
+  padding: 0;
+  background: #0e0e10;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+.header {
+  text-align: center;
+  padding: 20px;
+  font-size: 30px;
+  font-weight: bold;
+  color: #00eaff;
+}
+
+/* Cards layout */
+.container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(250px,1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.card {
+  background: #1a1a1d;
+  padding: 20px;
+  border-radius: 15px;
+  text-align: center;
+  border: 1px solid #00eaff33;
+  box-shadow: 0 0 10px #00eaff33;
+}
+
+/* Battery Box */
+.battery-box {
+  width: 170px;
+  height: 75px;
+  margin: auto;
+  border: 3px solid #fff;
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 15px #00ff85aa;   /* slight outer glow */
+}
+
+/* Battery Head */
+.battery-box::after {
+  content: "";
+  position: absolute;
+  right: -15px;
+  top: 22px;
+  width: 12px;
+  height: 30px;
+  background: white;
+  border-radius: 4px;
+}
+
+/* Battery Fill */
+.battery-fill {
+  height: 100%;
+  width: 0%;
+  background: #00ff85;
+  transition: width 1s ease-in-out, background 0.5s, box-shadow 0.5s;
+  box-shadow: 0 0 20px #00ff85;
+}
+
+/* Glowing Pulse Animation */
+@keyframes glowPulse {
+  0% { box-shadow: 0 0 10px #00ff85, 0 0 20px #00ff85; }
+  50% { box-shadow: 0 0 25px #00ff85, 0 0 45px #00ff85; }
+  100% { box-shadow: 0 0 10px #00ff85, 0 0 20px #00ff85; }
+}
+
+.glow {
+  animation: glowPulse 1.5s infinite ease-in-out;
+}
+
+.value {
+  font-size: 35px;
+  margin-top: 10px;
+  color: #00eaff;
+}
+
+.label {
+  font-size: 18px;
+  opacity: 0.7;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">⚡ Solar PowerBank Live Dashboard</div>
+
+<div class="container">
+
+  <!-- Animated Glowing Battery -->
+  <div class="card">
+    <div class="label">Battery Percentage</div>
+
+    <div class="battery-box">
+      <div id="batteryFill" class="battery-fill"></div>
+    </div>
+
+    <div id="batteryText" style="font-size:40px; margin-top:10px;">--%</div>
+  </div>
+
+  <div class="card">
+    <div class="label">Voltage</div>
+    <div id="voltage" class="value">-- V</div>
+  </div>
+
+  <div class="card">
+    <div class="label">Current</div>
+    <div id="current" class="value">-- A</div>
+  </div>
+
+  <div class="card">
+    <div class="label">Power</div>
+    <div id="power" class="value">-- W</div>
+  </div>
+
+</div>
+
+<script>
+// -------------------------------------------------
+// INSERT YOUR THINGSPEAK DETAILS HERE
+// -------------------------------------------------
+const channelID = YOUR_CHANNEL_ID_HERE; 
+const apiKey = "BW0AHV9LWZ7MRMUY";
+// -------------------------------------------------
+
+const apiURL = `https://api.thingspeak.com/channels/${channelID}/feeds/last.json?api_key=${apiKey}`;
+
+async function fetchData() {
+    try {
+        const response = await fetch(apiURL);
+        const data = await response.json();
+
+        const voltage = parseFloat(data.field1);
+        const current = parseFloat(data.field2);
+        const battery = parseFloat(data.field3);
+        const power = parseFloat(data.field4);
+
+        // Update text values
+        document.getElementById("voltage").innerHTML = voltage.toFixed(2) + " V";
+        document.getElementById("current").innerHTML = current.toFixed(2) + " A";
+        document.getElementById("batteryText").innerHTML = battery.toFixed(0) + "%";
+        document.getElementById("power").innerHTML = power.toFixed(2) + " W";
+
+        // Battery fill element
+        let fill = document.getElementById("batteryFill");
+        fill.style.width = battery + "%";
+
+        // Add glowing pulse effect
+        fill.classList.add("glow");
+
+        // Dynamic color change
+        if (battery > 60) {
+            fill.style.background = "#00ff85";     // Green
+            fill.style.boxShadow = "0 0 25px #00ff85";
+        }
+        else if (battery > 30) {
+            fill.style.background = "#ffe600";     // Yellow
+            fill.style.boxShadow = "0 0 20px #ffe600";
+        }
+        else {
+            fill.style.background = "#ff3b3b";     // Red
+            fill.style.boxShadow = "0 0 20px #ff3b3b";
+        }
+
+    } catch (error) {
+        console.log("Error fetching data:", error);
+    }
+}
+
+// Auto-refresh every 10 sec
+setInterval(fetchData, 10000);
+fetchData();
+
+</script>
+
+</body>
+</html>
+
+  background: #0e0e10;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+.header {
+  text-align: center;
+  padding: 20px;
+  font-size: 30px;
+  font-weight: bold;
+  color: #00eaff;
+}
+
+/* Cards layout */
+.container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(250px,1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.card {
+  background: #1a1a1d;
+  padding: 20px;
+  border-radius: 15px;
+  text-align: center;
+  border: 1px solid #00eaff33;
+  box-shadow: 0 0 10px #00eaff33;
+}
+
+/* Battery Box */
+.battery-box {
+  width: 170px;
+  height: 75px;
+  margin: auto;
+  border: 3px solid #fff;
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 15px #00ff85aa;   /* slight outer glow */
+}
+
+/* Battery Head */
+.battery-box::after {
+  content: "";
+  position: absolute;
+  right: -15px;
+  top: 22px;
+  width: 12px;
+  height: 30px;
+  background: white;
+  border-radius: 4px;
+}
+
+/* Battery Fill */
+.battery-fill {
+  height: 100%;
+  width: 0%;
+  background: #00ff85;
+  transition: width 1s ease-in-out, background 0.5s, box-shadow 0.5s;
+  box-shadow: 0 0 20px #00ff85;
+}
+
+/* Glowing Pulse Animation */
+@keyframes glowPulse {
+  0% { box-shadow: 0 0 10px #00ff85, 0 0 20px #00ff85; }
+  50% { box-shadow: 0 0 25px #00ff85, 0 0 45px #00ff85; }
+  100% { box-shadow: 0 0 10px #00ff85, 0 0 20px #00ff85; }
+}
+
+.glow {
+  animation: glowPulse 1.5s infinite ease-in-out;
+}
+
+.value {
+  font-size: 35px;
+  margin-top: 10px;
+  color: #00eaff;
+}
+
+.label {
+  font-size: 18px;
+  opacity: 0.7;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">⚡ Solar PowerBank Live Dashboard</div>
+
+<div class="container">
+
+  <!-- Animated Glowing Battery -->
+  <div class="card">
+    <div class="label">Battery Percentage</div>
+
+    <div class="battery-box">
+      <div id="batteryFill" class="battery-fill"></div>
+    </div>
+
+    <div id="batteryText" style="font-size:40px; margin-top:10px;">--%</div>
+  </div>
+
+  <div class="card">
+    <div class="label">Voltage</div>
+    <div id="voltage" class="value">-- V</div>
+  </div>
+
+  <div class="card">
+    <div class="label">Current</div>
+    <div id="current" class="value">-- A</div>
+  </div>
+
+  <div class="card">
+    <div class="label">Power</div>
+    <div id="power" class="value">-- W</div>
+  </div>
+
+</div>
+
+<script>
+// -------------------------------------------------
+// INSERT YOUR THINGSPEAK DETAILS HERE
+// -------------------------------------------------
+const channelID = YOUR_CHANNEL_ID_HERE; 
+const apiKey = "BW0AHV9LWZ7MRMUY";
+// -------------------------------------------------
+
+const apiURL = `https://api.thingspeak.com/channels/${channelID}/feeds/last.json?api_key=${apiKey}`;
+
+async function fetchData() {
+    try {
+        const response = await fetch(apiURL);
+        const data = await response.json();
+
+        const voltage = parseFloat(data.field1);
+        const current = parseFloat(data.field2);
+        const battery = parseFloat(data.field3);
+        const power = parseFloat(data.field4);
+
+        // Update text values
+        document.getElementById("voltage").innerHTML = voltage.toFixed(2) + " V";
+        document.getElementById("current").innerHTML = current.toFixed(2) + " A";
+        document.getElementById("batteryText").innerHTML = battery.toFixed(0) + "%";
+        document.getElementById("power").innerHTML = power.toFixed(2) + " W";
+
+        // Battery fill element
+        let fill = document.getElementById("batteryFill");
+        fill.style.width = battery + "%";
+
+        // Add glowing pulse effect
+        fill.classList.add("glow");
+
+        // Dynamic color change
+        if (battery > 60) {
+            fill.style.background = "#00ff85";     // Green
+            fill.style.boxShadow = "0 0 25px #00ff85";
+        }
+        else if (battery > 30) {
+            fill.style.background = "#ffe600";     // Yellow
+            fill.style.boxShadow = "0 0 20px #ffe600";
+        }
+        else {
+            fill.style.background = "#ff3b3b";     // Red
+            fill.style.boxShadow = "0 0 20px #ff3b3b";
+        }
+
+    } catch (error) {
+        console.log("Error fetching data:", error);
+    }
+}
+
+// Auto-refresh every 10 sec
+setInterval(fetchData, 10000);
+fetchData();
+
+</script>
+
+</body>
+</html>
+
